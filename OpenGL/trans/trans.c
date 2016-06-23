@@ -35,7 +35,7 @@ void display_gl(void)
         glPushMatrix();
         glTranslatef(-2, 0, 0);
         glScalef(1.0, 2.0, 1.0);
-        glRotatef(60, 1, 0, 0);
+        glRotatef(60, 0, 0, 1);
 
         glBegin(GL_TRIANGLES);
         glVertex3f(0.0, 0.0, 0.0);
@@ -67,7 +67,7 @@ myScalef(float x, float y, float z)
                 1, 0, 0, 0,
                 0, 1, 0, 0,
                 0, 0, 1, 0,
-                0, 0, 0, 0,
+                0, 0, 0, 1,
         };
         if (x != 0) {
                 tmp[0] = x;
@@ -100,7 +100,7 @@ myRotatef(float angle, float x, float y, float z)
         float s = sin( alpha );
         float c = cos( alpha );
         float t = 1.0f - c;
-
+#if 1
 #define MATRIX( row, col ) tmp[row * 4 + col]
         MATRIX( 0, 0 ) = t * x * x + c;
         MATRIX( 1, 0 ) = t * x * y + s * z;
@@ -119,6 +119,26 @@ myRotatef(float angle, float x, float y, float z)
         MATRIX( 2, 3 ) = 0.0f;
         MATRIX( 3, 3 ) = 1.0f;
 #undef MATRIX
+#else
+#define MATRIX( row, col ) tmp[row * 4 + col]
+        MATRIX( 0, 0 ) = t * x * x + c;
+        MATRIX( 0, 1 ) = t * x * y + s * z;
+        MATRIX( 0, 2 ) = t * x * z - s * y;
+        MATRIX( 0, 3 ) = 0.0f;
+        MATRIX( 1, 0 ) = t * x * y - s * z;
+        MATRIX( 1, 1 ) = t * y * y + c;
+        MATRIX( 1, 2 ) = t * y * z + s * x;
+        MATRIX( 1, 3 ) = 0.0f;
+        MATRIX( 2, 0 ) = t * x * z + s * y;
+        MATRIX( 2, 1 ) = t * y * z - s * x;
+        MATRIX( 2, 2 ) = t * z * z + c;
+        MATRIX( 2, 3 ) = 0.0f;
+        MATRIX( 3, 0 ) = 0.0f;
+        MATRIX( 3, 1 ) = 0.0f;
+        MATRIX( 3, 2 ) = 0.0f;
+        MATRIX( 3, 3 ) = 1.0f;
+#undef MATRIX
+#endif
         mult_mat(tmp, trans_mat);
         myScalef(x, y, z);
 #if 0
@@ -143,9 +163,9 @@ void display_mytrans()
         glClear(GL_COLOR_BUFFER_BIT);
         glColor3f(0.0, 1.0, 0.0);
         glPushMatrix();
-        myTranslatef(-2, 0, 0);
-        myScalef(1.0, 2.0, 1.0);
-        myRotatef(20, 1, 0, 0);
+//        myTranslatef(-2, 0, 0);
+//        myScalef(1.0, 2.0, 1.0);
+        myRotatef(60, 0, 0, 1);
         printf("%f %f %f %f\n", trans_mat[0], trans_mat[1], trans_mat[2], trans_mat[3]);
         printf("%f %f %f %f\n", trans_mat[4], trans_mat[5], trans_mat[6], trans_mat[7]);
         printf("%f %f %f %f\n", trans_mat[8], trans_mat[9], trans_mat[10], trans_mat[11]);
