@@ -1,0 +1,138 @@
+/*
+ * Read Mesa Source and Note.
+ * HkQi <qihangkong@xymicri.com>
+ * 20160620
+ */
+
+glutInit
+{
+    fgPlatformInitialize(); // 1>1
+}
+
+// 1>1
+void fgPlatformInitialize( const char* displayName )
+{
+    glXQueryExtension();  // src/glx/glxcmds.c  do some query.
+    glXQueryExtensionsString(); // 1>2
+}
+
+// 1>2
+// src/glx/glxcmds.c
+_X_EXPORT const char *
+glXQueryExtensionsString(Display * dpy, int screen)
+{
+    GetGLXPrivScreenConfig(creen, &priv, &psc); // 1>3
+}
+
+// 1>3
+// src/glx/glxcmds.c
+static int GetGLXPrivScreenConfig(...)
+{
+    __glXInitialize(); // 1>4
+}
+
+// 1>4
+// src/glx/glxext.c
+_X_HIDDEN struct glx_display *
+__glXInitialize(Display * dpy)
+{
+    if (dpyPriv in glx_displays) {
+        return dpyPriv;
+    }
+
+    dpyPriv = calloc(1, sizeof *dpyPriv);
+
+    dpyPriv->dri2Display = dri2CreateDisplay(dpy); // 1>5
+    dpyPriv->driDisplay = driCreateDisplay(dpy);
+    dpyPriv->driswDisplay = driswCreateDisplay(dpy); // 1>5
+
+    AllocAndFetchScreenConfigs(dpy, dpyPriv);
+}
+
+// 1>5
+// src/glx/dri2_glx.c
+dri2CreateDisplay(Display * dpy)
+{
+    struct dri2_display *pdp;
+
+    pdp->base.createScreen = dri2CreateScreen;
+}
+
+// 1>5
+// src/glx/glxext.c
+AllocAndFetchScreenConfigs(Display * dpy, struct glx_display * priv)
+{
+    struct glx_screen *psc;
+
+    psc = (*priv->dri2Display->createScreen) (i, priv); // 1>6 dri2CreateScreen
+}
+
+// 1>6
+// src/glx/dri2_glx.c
+dri2CreateScreen (int screen, struct glx_display * priv)
+{
+    glx_screen_init();  // Nothing.
+    
+    psc->dri2->createNewScreen2(); // 1>7 driCreateNewScreen2
+    
+}
+
+// 1>7
+// src/mesa/drivers/dri/common/dri_util.c
+driCreateNewScreen2(...)
+{
+    psp->driver = globalDriverAPI;
+    // globalDriverAPI = &driDriverAPI;
+    // const struct __DriverAPIRec driDriverAPI = {  // src/gallium/state_trackers/dri/drm/dri2.c
+    //      .InitScreen = dri2_init_screen,
+    //      .DestroyScreen = dri_destroy_screen,
+    //      .CreateContext = dri_create_context,
+    //      .DestroyContext = dri_destroy_context,
+    //      .CreateBuffer = dri2_create_buffer,
+    //      .DestroyBuffer = dri_destroy_buffer,
+    //      .MakeCurrent = dri_make_current,
+    //      .UnbindContext = dri_unbind_context,
+    //
+    //      .AllocateBuffer = dri2_allocate_buffer,
+    //      .ReleaseBuffer  = dri2_release_buffer,
+    psp->driver->InitScreen(psp); // 1>8 dri2_init_screen
+}
+
+// 1>8
+// src/gallium/state_trackers/dri/drm/dri2.c
+dri2_init_screen()
+{
+    dri_init_screen_helper(); // 1>9
+}
+
+// 1>9
+// src/gallium/state_trackers/dri/common/dri_screen.c
+dri_init_screen_helper()
+{
+    screen->st_api = st_gl_api_create(); // 1>10
+}
+
+// 1>10
+// src/mesa/state_tracker/st_manager.c
+st_gl_api_create()
+{
+    return &st_gl_api;
+
+    /*
+       static const struct st_api st_gl_api = { 
+       "Mesa " PACKAGE_VERSION,
+       ST_API_OPENGL,
+       ST_PROFILE_DEFAULT_MASK |
+       ST_PROFILE_OPENGL_CORE_MASK |
+       ST_PROFILE_OPENGL_ES1_MASK |
+       ST_PROFILE_OPENGL_ES2_MASK |
+       0,  
+       ST_API_FEATURE_MS_VISUALS_MASK,
+       st_api_destroy,
+       st_api_get_proc_address,
+       st_api_create_context,
+       st_api_make_current,
+       st_api_get_current,
+       };
+    */
+}
