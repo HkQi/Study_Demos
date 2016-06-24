@@ -59,7 +59,7 @@ myTranslatef(float x, float y, float z)
         tmp[7] = y;
         tmp[11] = z;
 
-        mult_mat(tmp, trans_mat);
+        mult_mat(trans_mat, tmp);
 }
 myScalef(float x, float y, float z)
 {
@@ -79,7 +79,7 @@ myScalef(float x, float y, float z)
                 tmp[10] = z;
         }
 
-        mult_mat(tmp, trans_mat);
+        mult_mat(trans_mat, tmp);
 
 }
 
@@ -139,7 +139,7 @@ myRotatef(float angle, float x, float y, float z)
         MATRIX( 3, 3 ) = 1.0f;
 #undef MATRIX
 #endif
-        mult_mat(tmp, trans_mat);
+        mult_mat(trans_mat, tmp);
         myScalef(x, y, z);
 #if 0
         GLfloat tmp[16] = {
@@ -163,8 +163,8 @@ void display_mytrans()
         glClear(GL_COLOR_BUFFER_BIT);
         glColor3f(0.0, 1.0, 0.0);
         glPushMatrix();
-//        myTranslatef(-2, 0, 0);
-//        myScalef(1.0, 2.0, 1.0);
+        myTranslatef(-2, 0, 0);
+        myScalef(1.0, 2.0, 1.0);
         myRotatef(60, 0, 0, 1);
         printf("%f %f %f %f\n", trans_mat[0], trans_mat[1], trans_mat[2], trans_mat[3]);
         printf("%f %f %f %f\n", trans_mat[4], trans_mat[5], trans_mat[6], trans_mat[7]);
@@ -192,7 +192,7 @@ void display_mytrans()
 
 void display(void)
 {
-#if 1
+#if 0
         display_gl();
 #else
         display_mytrans();

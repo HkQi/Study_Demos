@@ -25,7 +25,7 @@ void mult_mat(float mat1[16], float mat2[16])
         tmp[15] = MULT(12, 3) + MULT(13, 7) + MULT(14, 11) + MULT(15, 15);
 
         for (i=0; i<16; i++) {
-                mat2[i] = tmp[i];
+                mat1[i] = tmp[i];
         }       
 }
 
