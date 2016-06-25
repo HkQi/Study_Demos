@@ -98,6 +98,47 @@
 
         cout << "The Val is " << var_addr << endl;
 
-               
+ /* sc_logic */
+        // '0' SC_LOGIC_0
+        // '1' SC_LOGIC_1
+        // 'X' or 'x' SC_LOGIC_X
+        // 'Z' or 'z' SC_LOGIC_Z
+ /* 在使用赋值，相等和不想等 操作时, sc_logic可以和sc_bit类型的操作数相互混用 */
+ /* 用to_bool方法可以将sc_logic类型转换成 bool类型 */
+        sc_lv<4> data_bus;
+        sc_signal<sc_lv<8> > counter_state;
+        sc_out<sc_lv<16> > sensor;
+        data_bus = "0011";
+        sensor = "00110XXX01ZZ";
+        data_bus = "0d14";
+        sc_lv<8> dtack_read = "0xFE";
+        sc_lv<4> coh_rd = "0xA";
+
+ /* 同样不能直接对逻辑向量类型进行算术运算 */
+  
+ /* sc_int */
+        sc_int<4> sel_addr, inc_pc;
+        sc_int<8> opcode;
+        sc_int<12> sel_date;
+        #define N 7
+        sc_in<sc_int<N+1> > cpu_control[4];
+        sc_int<16> hr_reg_file[32];
+
+        opcode = sel_addr + inc_pc; // 
+
+        sel_data = -12;
+        opcode = sel_data << 2;
+        sel_addr = 6;
+        inc_pc = -5;
+        sel_addr = sel_addr ^ inc_pc;
+        sel_data = 100;
+        inc_pc = sel_data.range(3, 0);
+        opcode.range(1, 0) = (sel_data[6], sel_data[7]);
+        hr_reg_file[2] = concat(sel_data, sel_addr);
+        bool stop_clk;
+        bool start_clk;
+        stop_clk = inc_pc.and_reduce();
+        start_clk = hr_reg_file[15].xor_reduce();
+
  }
 
